@@ -41,13 +41,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ipField: EditText
     private lateinit var pinField: EditText
     private lateinit var btnMode: Button
+    private lateinit var btnInputMode: Button
     private lateinit var bluetoothSetup: View
     private lateinit var wifiSettings: View
+    private lateinit var mouseKeyboardControls: View
+    private lateinit var gamepadControls: View
     private val netExecutor = Executors.newSingleThreadExecutor()
     private var socket: DatagramSocket? = null
     private var buttonsMask = 0
+    private var gamepadMode = false
+    private var gamepadButtons = 0
+    private var dpadMask = 0
+    private var gamepadHat = 8
+    private var leftX = 0
+    private var leftY = 0
+    private var rightX = 0
+    private var rightY = 0
+    private var leftTrigger = 0
+    private var rightTrigger = 0
 
-    // Descripteur HID : clavier (rapport 1) + souris (rapport 2)
+    // Descripteur HID : clavier (rapport 1), souris (rapport 2) et manette (rapport 3)
     private val descriptor = byteArrayOf(
         0x05, 0x01, 0x09, 0x06, 0xA1.toByte(), 0x01, 0x85.toByte(), 0x01,
         0x05, 0x07, 0x19, 0xE0.toByte(), 0x29, 0xE7.toByte(), 0x15, 0x00, 0x25, 0x01,
@@ -63,7 +76,18 @@ class MainActivity : AppCompatActivity() {
         0x95.toByte(), 0x01, 0x75, 0x05, 0x81.toByte(), 0x01,
         0x05, 0x01, 0x09, 0x30, 0x09, 0x31, 0x09, 0x38,
         0x15, 0x81.toByte(), 0x25, 0x7F, 0x75, 0x08, 0x95.toByte(), 0x03, 0x81.toByte(), 0x06,
-        0xC0.toByte(), 0xC0.toByte()
+        0xC0.toByte(), 0xC0.toByte(),
+        0x05, 0x01, 0x09, 0x05, 0xA1.toByte(), 0x01, 0x85.toByte(), 0x03,
+        0x05, 0x09, 0x19, 0x01, 0x29, 0x10, 0x15, 0x00, 0x25, 0x01,
+        0x75, 0x01, 0x95.toByte(), 0x10, 0x81.toByte(), 0x02,
+        0x05, 0x01, 0x09, 0x30, 0x09, 0x31, 0x09, 0x33, 0x09, 0x34,
+        0x15, 0x81.toByte(), 0x25, 0x7F, 0x75, 0x08, 0x95.toByte(), 0x04, 0x81.toByte(), 0x02,
+        0x09, 0x32, 0x09, 0x35, 0x15, 0x00, 0x26, 0xFF.toByte(), 0x00,
+        0x75, 0x08, 0x95.toByte(), 0x02, 0x81.toByte(), 0x02,
+        0x05, 0x01, 0x09, 0x39, 0x15, 0x00, 0x25, 0x07, 0x35, 0x00,
+        0x46, 0x3B, 0x01, 0x65, 0x14, 0x75, 0x04, 0x95.toByte(), 0x01, 0x81.toByte(), 0x42,
+        0x75, 0x04, 0x95.toByte(), 0x01, 0x81.toByte(), 0x03,
+        0xC0.toByte()
     )
 
     // Codes de touches USB (position physique, comme un clavier QWERTY).
@@ -113,8 +137,11 @@ class MainActivity : AppCompatActivity() {
         ipField = findViewById(R.id.ipField)
         pinField = findViewById(R.id.pinField)
         btnMode = findViewById(R.id.btnMode)
+        btnInputMode = findViewById(R.id.btnInputMode)
         bluetoothSetup = findViewById(R.id.bluetoothSetup)
         wifiSettings = findViewById(R.id.wifiSettings)
+        mouseKeyboardControls = findViewById(R.id.mouseKeyboardControls)
+        gamepadControls = findViewById(R.id.gamepadControls)
 
         val prefs = getSharedPreferences("relais", MODE_PRIVATE)
         ipField.setText(prefs.getString("ip", ""))
@@ -130,6 +157,14 @@ class MainActivity : AppCompatActivity() {
             prefs.edit().putBoolean("wifi_mode", wifiMode).apply()
             renderMode()
         }
+        btnInputMode.setOnClickListener {
+            if (wifiMode) {
+                setStatus("La manette complète nécessite une connexion Bluetooth")
+            } else {
+                gamepadMode = !gamepadMode
+                renderControls()
+            }
+        }
 
         findViewById<Button>(R.id.btnActivate).setOnClickListener { activate() }
         findViewById<Button>(R.id.btnVisible).setOnClickListener { makeVisible() }
@@ -138,11 +173,32 @@ class MainActivity : AppCompatActivity() {
         setupTouchpad(findViewById(R.id.touchpad))
         setupClick(R.id.btnLeft, 1)
         setupClick(R.id.btnRight, 2)
+        setupClick(R.id.btnMiddle, 4)
+        setupScroll(R.id.btnScrollUp, 1)
+        setupScroll(R.id.btnScrollDown, -1)
         setupKey(R.id.keyUp, KEY_W, SC_W)
         setupKey(R.id.keyLeft, KEY_A, SC_A)
         setupKey(R.id.keyDown, KEY_S, SC_S)
         setupKey(R.id.keyRight, KEY_D, SC_D)
         setupKey(R.id.keySpace, KEY_SPACE, SC_SPACE)
+        setupGamepadButton(R.id.btnA, 0)
+        setupGamepadButton(R.id.btnB, 1)
+        setupGamepadButton(R.id.btnX, 2)
+        setupGamepadButton(R.id.btnY, 3)
+        setupGamepadButton(R.id.btnLB, 4)
+        setupGamepadButton(R.id.btnRB, 5)
+        setupGamepadButton(R.id.btnSelect, 6)
+        setupGamepadButton(R.id.btnStart, 7)
+        setupGamepadButton(R.id.btnL3, 8)
+        setupGamepadButton(R.id.btnR3, 9)
+        setupGamepadButton(R.id.btnDpadUp, 10)
+        setupGamepadButton(R.id.btnDpadDown, 11)
+        setupGamepadButton(R.id.btnDpadLeft, 12)
+        setupGamepadButton(R.id.btnDpadRight, 13)
+        setupGamepadButton(R.id.btnLT, 14)
+        setupGamepadButton(R.id.btnRT, 15)
+        setupJoystick(R.id.leftStick, true)
+        setupJoystick(R.id.rightStick, false)
 
         askPermissions()
     }
@@ -163,10 +219,23 @@ class MainActivity : AppCompatActivity() {
         bluetoothSetup.visibility = if (wifiMode) View.GONE else View.VISIBLE
         wifiSettings.visibility = if (wifiMode) View.VISIBLE else View.GONE
         btnMode.text = if (wifiMode) "Passer au Bluetooth" else "Passer au Wi-Fi"
+        if (wifiMode) gamepadMode = false
+        renderControls()
         setStatus(
             if (wifiMode) "Wi-Fi : démarre le serveur PC, puis saisis son IP et son code"
             else "Bluetooth : fais 1, 2, 3"
         )
+    }
+
+    private fun renderControls() {
+        mouseKeyboardControls.visibility = if (gamepadMode) View.GONE else View.VISIBLE
+        gamepadControls.visibility = if (gamepadMode) View.VISIBLE else View.GONE
+        btnInputMode.isEnabled = !wifiMode
+        btnInputMode.text = when {
+            wifiMode -> "Manette complète : Bluetooth"
+            gamepadMode -> "Afficher clavier et souris"
+            else -> "Afficher la manette"
+        }
     }
 
     private fun askPermissions() {
@@ -193,7 +262,7 @@ class MainActivity : AppCompatActivity() {
                 if (profile != BluetoothProfile.HID_DEVICE) return
                 hid = proxy as BluetoothHidDevice
                 val sdp = BluetoothHidDeviceAppSdpSettings(
-                    "Relais", "Clavier et souris", "Relais",
+                    "Relais Manette", "Manette, clavier et souris", "Relais",
                     BluetoothHidDevice.SUBCLASS1_COMBO, descriptor
                 )
                 val started = hid?.registerApp(sdp, null, null, executor, callback) ?: false
@@ -294,6 +363,76 @@ class MainActivity : AppCompatActivity() {
         h.sendReport(d, 2, byteArrayOf(buttonsMask.toByte(), 0, 0, 0))
     }
 
+    private fun mouseScroll(amount: Int) {
+        if (wifiMode) { sendNet("W $amount"); return }
+        val h = hid ?: return
+        val d = host ?: return
+        h.sendReport(d, 2, byteArrayOf(buttonsMask.toByte(), 0, 0, amount.toByte()))
+    }
+
+    private fun setGamepadButton(index: Int, down: Boolean) {
+        val mask = 1 shl index
+        gamepadButtons = if (down) gamepadButtons or mask else gamepadButtons and mask.inv()
+        if (index in 10..13) {
+            val direction = 1 shl (index - 10)
+            dpadMask = if (down) dpadMask or direction else dpadMask and direction.inv()
+            gamepadHat = when {
+                dpadMask and 1 != 0 && dpadMask and 8 != 0 -> 1
+                dpadMask and 8 != 0 && dpadMask and 2 != 0 -> 3
+                dpadMask and 2 != 0 && dpadMask and 4 != 0 -> 5
+                dpadMask and 4 != 0 && dpadMask and 1 != 0 -> 7
+                dpadMask and 1 != 0 -> 0
+                dpadMask and 8 != 0 -> 2
+                dpadMask and 2 != 0 -> 4
+                dpadMask and 4 != 0 -> 6
+                else -> 8
+            }
+        }
+        if (index == 14) leftTrigger = if (down) 255 else 0
+        if (index == 15) rightTrigger = if (down) 255 else 0
+        sendGamepadReport()
+    }
+
+    private fun sendGamepadReport() {
+        val h = hid ?: return
+        val d = host ?: return
+        val report = byteArrayOf(
+            gamepadButtons.toByte(),
+            (gamepadButtons shr 8).toByte(),
+            leftX.toByte(),
+            leftY.toByte(),
+            rightX.toByte(),
+            rightY.toByte(),
+            leftTrigger.toByte(),
+            rightTrigger.toByte(),
+            gamepadHat.toByte()
+        )
+        h.sendReport(d, 3, report)
+    }
+
+    private fun setupGamepadButton(id: Int, index: Int) {
+        findViewById<Button>(id).setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> setGamepadButton(index, true)
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> setGamepadButton(index, false)
+            }
+            true
+        }
+    }
+
+    private fun setupJoystick(id: Int, left: Boolean) {
+        findViewById<JoystickView>(id).onPositionChanged = { x, y ->
+            if (left) {
+                leftX = (x * 127).toInt()
+                leftY = (y * 127).toInt()
+            } else {
+                rightX = (x * 127).toInt()
+                rightY = (y * 127).toInt()
+            }
+            sendGamepadReport()
+        }
+    }
+
     private fun setupTouchpad(pad: View) {
         var lastX = 0f
         var lastY = 0f
@@ -332,6 +471,10 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    private fun setupScroll(id: Int, amount: Int) {
+        findViewById<Button>(id).setOnClickListener { mouseScroll(amount) }
     }
 
     private fun setupKey(id: Int, usb: Int, scan: Int) {

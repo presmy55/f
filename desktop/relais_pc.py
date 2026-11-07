@@ -13,7 +13,7 @@ KEYS = {
     0x20: "d",
     0x39: " ",
 }
-BUTTONS = {1: "left", 2: "right"}
+BUTTONS = {1: "left", 2: "right", 4: "middle"}
 
 
 def local_ip():
@@ -59,6 +59,10 @@ def handle_packet(packet, pin, keyboard, mouse, mouse_button_type, pressed_keys,
             dx, dy = int(fields[2]), int(fields[3])
             if -127 <= dx <= 127 and -127 <= dy <= 127:
                 mouse.move(dx, dy)
+        elif fields[1] == "W" and len(fields) == 3:
+            amount = int(fields[2])
+            if -1 <= amount <= 1:
+                mouse.scroll(0, amount)
     except (UnicodeDecodeError, ValueError):
         return
 

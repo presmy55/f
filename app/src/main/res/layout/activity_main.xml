@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"
-        android:text="RELAIS · CLAVIER ET SOURIS"
+        android:text="RELAIS · CLAVIER, SOURIS ET MANETTE"
         android:textColor="#173B35"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -30,6 +30,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Passer au Wi-Fi" />
+
+    <Button
+        android:id="@+id/btnInputMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Afficher la manette" />
 
     <LinearLayout
         android:id="@+id/bluetoothSetup"
@@ -88,48 +95,180 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:text="Pavé tactile · glisse pour déplacer, tape pour cliquer"
-        android:textColor="#173B35" />
-
-    <View
-        android:id="@+id/touchpad"
+    <LinearLayout
+        android:id="@+id/mouseKeyboardControls"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_weight="1"
-        android:minHeight="100dp"
-        android:background="#DDE1E8" />
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="Pavé tactile · glisse pour déplacer, tape pour cliquer"
+            android:textColor="#173B35" />
 
-        <Button android:id="@+id/btnLeft" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:text="Clic gauche" />
-        <Button android:id="@+id/btnRight" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:text="Clic droit" />
+        <View
+            android:id="@+id/touchpad"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="1"
+            android:minHeight="100dp"
+            android:background="#DDE1E8" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnLeft" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Clic gauche" />
+            <Button android:id="@+id/btnMiddle" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Clic milieu" />
+            <Button android:id="@+id/btnRight" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Clic droit" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnScrollUp" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Molette +" />
+            <Button android:id="@+id/btnScrollDown" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Molette −" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/keyUp" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Z" />
+            <Button android:id="@+id/keyLeft" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Q" />
+            <Button android:id="@+id/keyDown" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="S" />
+            <Button android:id="@+id/keyRight" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="D" />
+            <Button android:id="@+id/keySpace" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1.5" android:text="Espace" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/gamepadControls"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-        <Button android:id="@+id/keyUp" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:text="Z" />
-        <Button android:id="@+id/keyLeft" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:text="Q" />
-        <Button android:id="@+id/keyDown" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:text="S" />
-        <Button android:id="@+id/keyRight" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:text="D" />
-        <Button android:id="@+id/keySpace" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1.5" android:text="Espace" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Manette Bluetooth · joysticks, gâchettes et boutons"
+            android:textColor="#173B35"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="144dp"
+            android:orientation="horizontal">
+
+            <com.relais.bt.JoystickView
+                android:id="@+id/leftStick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="Joystick gauche" />
+
+            <com.relais.bt.JoystickView
+                android:id="@+id/rightStick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="Joystick droit" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnLT" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="LT" />
+            <Button android:id="@+id/btnLB" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="LB" />
+            <Button android:id="@+id/btnRB" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="RB" />
+            <Button android:id="@+id/btnRT" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="RT" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button android:id="@+id/btnDpadUp" android:layout_width="match_parent" android:layout_height="0dp"
+                    android:layout_weight="1" android:text="↑" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+                    <Button android:id="@+id/btnDpadLeft" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="←" />
+                    <Button android:id="@+id/btnDpadRight" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="→" />
+                </LinearLayout>
+                <Button android:id="@+id/btnDpadDown" android:layout_width="match_parent" android:layout_height="0dp"
+                    android:layout_weight="1" android:text="↓" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+                    <Button android:id="@+id/btnX" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="X" />
+                    <Button android:id="@+id/btnY" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="Y" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+                    <Button android:id="@+id/btnA" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="A" />
+                    <Button android:id="@+id/btnB" android:layout_width="0dp" android:layout_height="match_parent"
+                        android:layout_weight="1" android:text="B" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/btnL3" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="L3" />
+            <Button android:id="@+id/btnSelect" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Select" />
+            <Button android:id="@+id/btnStart" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="Start" />
+            <Button android:id="@+id/btnR3" android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:text="R3" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -33,3 +33,15 @@ serveur PC quand vous avez terminé.
 
 Ouvrez le projet dans Android Studio et lancez la tâche `assembleDebug`, ou
 utilisez l’APK `app-debug.apk` produit par GitHub Actions.
+
+En Bluetooth, l’écran « Manette » envoie un contrôleur HID générique avec deux
+joysticks, une croix directionnelle, A/B/X/Y, LB/RB, LT/RT, L3/R3, Select et
+Start. La prise en charge dépend du téléphone Android et de l’ordinateur ; les
+jeux peuvent interpréter les boutons différemment d’une manette Xbox. Les jeux
+qui exigent exclusivement XInput peuvent ne pas accepter ce contrôleur HID
+générique ; cette compatibilité ne peut pas être forcée depuis Android.
+
+En Wi-Fi, le programme PC contrôle le clavier et la souris : pavé tactile,
+clics gauche/milieu/droit, molette, Z/Q/S/D et espace. Il ne crée pas de
+manette virtuelle. Pour utiliser la manette sur Chromebook, choisissez
+Bluetooth et associez le téléphone dans les paramètres Bluetooth de ChromeOS.
