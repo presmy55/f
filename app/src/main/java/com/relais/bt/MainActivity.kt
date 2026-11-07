@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ipField: EditText
     private lateinit var pinField: EditText
     private lateinit var btnMode: Button
+    private lateinit var bluetoothSetup: View
+    private lateinit var wifiSettings: View
     private val netExecutor = Executors.newSingleThreadExecutor()
     private var socket: DatagramSocket? = null
     private var buttonsMask = 0
@@ -111,28 +113,22 @@ class MainActivity : AppCompatActivity() {
         ipField = findViewById(R.id.ipField)
         pinField = findViewById(R.id.pinField)
         btnMode = findViewById(R.id.btnMode)
+        bluetoothSetup = findViewById(R.id.bluetoothSetup)
+        wifiSettings = findViewById(R.id.wifiSettings)
 
         val prefs = getSharedPreferences("relais", MODE_PRIVATE)
         ipField.setText(prefs.getString("ip", ""))
         prefs.getString("pin", null)?.let { pinField.setText(it) }
+        wifiMode = prefs.getBoolean("wifi_mode", false)
+
+        adapter = (getSystemService(BLUETOOTH_SERVICE) as BluetoothManager).adapter
+        if (adapter == null) wifiMode = true
+        renderMode()
 
         btnMode.setOnClickListener {
             wifiMode = !wifiMode
-            btnMode.text = if (wifiMode) "Mode : Wi-Fi" else "Mode : Bluetooth"
-            if (wifiMode) {
-                prefs.edit()
-                    .putString("ip", ipField.text.toString().trim())
-                    .putString("pin", pinField.text.toString().trim())
-                    .apply()
-                setStatus("Wi-Fi : démarre le serveur PC, puis saisis son IP et son code")
-            } else {
-                setStatus("Bluetooth : fais 1, 2, 3")
-            }
-        }
-
-        adapter = (getSystemService(BLUETOOTH_SERVICE) as BluetoothManager).adapter
-        if (adapter == null) {
-            setStatus("Pas de Bluetooth : utilise le mode Wi-Fi")
+            prefs.edit().putBoolean("wifi_mode", wifiMode).apply()
+            renderMode()
         }
 
         findViewById<Button>(R.id.btnActivate).setOnClickListener { activate() }
@@ -162,6 +158,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setStatus(text: String) { status.text = text }
+
+    private fun renderMode() {
+        bluetoothSetup.visibility = if (wifiMode) View.GONE else View.VISIBLE
+        wifiSettings.visibility = if (wifiMode) View.VISIBLE else View.GONE
+        btnMode.text = if (wifiMode) "Passer au Bluetooth" else "Passer au Wi-Fi"
+        setStatus(
+            if (wifiMode) "Wi-Fi : démarre le serveur PC, puis saisis son IP et son code"
+            else "Bluetooth : fais 1, 2, 3"
+        )
+    }
 
     private fun askPermissions() {
         if (Build.VERSION.SDK_INT >= 31) {
