@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                     .putString("ip", ipField.text.toString().trim())
                     .putString("pin", pinField.text.toString().trim())
                     .apply()
-                setStatus("Wi-Fi : lance le programme sur le PC, puis ecris son IP")
+                setStatus("Wi-Fi : démarre le serveur PC, puis saisis son IP et son code")
             } else {
                 setStatus("Bluetooth : fais 1, 2, 3")
             }
@@ -149,6 +149,16 @@ class MainActivity : AppCompatActivity() {
         setupKey(R.id.keySpace, KEY_SPACE, SC_SPACE)
 
         askPermissions()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (::ipField.isInitialized && ::pinField.isInitialized) {
+            getSharedPreferences("relais", MODE_PRIVATE).edit()
+                .putString("ip", ipField.text.toString().trim())
+                .putString("pin", pinField.text.toString().trim())
+                .apply()
+        }
     }
 
     private fun setStatus(text: String) { status.text = text }

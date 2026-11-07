@@ -7,16 +7,35 @@
     android:padding="12dp">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        android:text="RELAIS · CLAVIER ET SOURIS"
+        android:textColor="#173B35"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
         android:text="Relais inactif"
         android:textColor="#111"
         android:textSize="16sp" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        android:text="Connexion Bluetooth"
+        android:textColor="#173B35"
+        android:textStyle="bold" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <Button android:id="@+id/btnActivate" android:layout_width="0dp" android:layout_height="wrap_content"
@@ -26,6 +45,15 @@
         <Button android:id="@+id/btnPc" android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:text="3. Mon PC" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="4dp"
+        android:text="Mode Wi-Fi : entre l’IP et le code affichés sur le PC"
+        android:textColor="#173B35"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,6 +70,13 @@
             android:text="1234" android:maxLines="1" android:textSize="14sp" />
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:text="Pavé tactile · glisse pour déplacer, tape pour cliquer"
+        android:textColor="#173B35" />
+
     <View
         android:id="@+id/touchpad"
         android:layout_width="match_parent"
@@ -49,6 +84,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_weight="1"
+        android:minHeight="100dp"
         android:background="#DDE1E8" />
 
     <LinearLayout
